@@ -867,9 +867,9 @@ class Word2Vec(utils.SaveLoad):
                 if not section:
                     raise ValueError("missing section header before line #%i in %s" % (line_no, questions))
                 try:
-                    a, b, c, expected = [word for word in line.split()]  # TODO assumes vocabulary preprocessing uses lowercase, too...
+                    a, b, c, expected = [word for word in line.split()] 
                 except:
-                    logger.info("skipping invalid line #%i in %s" % (line_no, questions))
+                    logger.info("skipping invalid line #%i in %s: with %s, %s, %s, %s" % (line_no, questions,a,b,c,expected))
                 if a not in ok_vocab or b not in ok_vocab or c not in ok_vocab or expected not in ok_vocab:
                     logger.debug("skipping line #%i with OOV words: %s" % (line_no, line.strip()))
                     continue
