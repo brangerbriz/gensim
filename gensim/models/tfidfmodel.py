@@ -130,6 +130,28 @@ class TfidfModel(interfaces.TransformationABC):
                      (self.num_docs, n_features, self.num_nnz))
         self.idfs = precompute_idfs(self.wglobal, self.dfs, self.num_docs)
 
+    def train(self, corpus):
+        """Retraining routine by charley"""
+        logger.info("collecting document frequencies")
+        dfs = self.dfs
+        numnnz, docno = 0, -1
+        for docno, bow in enumerate(corpus):
+            if docno % 10000 == 0:
+                logger.info("PROGRESS: processing document #%i" % docno)
+            numnnz += len(bow)
+            for termid, _ in bow:
+                dfs[termid] = dfs.get(termid, 0) + 1
+
+        # keep some stats about the training corpus
+        self.num_docs += docno + 1
+        self.num_nnz += numnnz
+        self.dfs = dfs
+
+        # and finally compute the idf weights
+        n_features = max(dfs) if dfs else 0
+        logger.info("calculating IDF weights for %i documents and %i features (%i matrix non-zeros)" %
+                     (self.num_docs, n_features, self.num_nnz))
+        self.idfs = precompute_idfs(self.wglobal, self.dfs, self.num_docs)
 
     def __getitem__(self, bow, eps=1e-12):
         """
