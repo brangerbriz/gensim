@@ -834,7 +834,7 @@ class Word2Vec(utils.SaveLoad):
                 (section['section'], 100.0 * correct / (correct + incorrect),
                 correct, correct + incorrect))
 
-    def accuracy(self, questions, restrict_vocab=30000, most_similar=most_similar):
+    def accuracy(self, questions, restrict_vocab=30000, most_similar=most_similar, lower = True):
         """
         Compute accuracy of the model. `questions` is a filename where lines are
         4-tuples of words, split into sections by ": SECTION NAME" lines.
@@ -867,7 +867,10 @@ class Word2Vec(utils.SaveLoad):
                 if not section:
                     raise ValueError("missing section header before line #%i in %s" % (line_no, questions))
                 try:
-                    a, b, c, expected = [word for word in line.split()] 
+                    if lower == True:
+                        a, b, c, expected = [word.lower() for word in line.split()] 
+                    else:
+                        a, b, c, expected = [word for word in line.split()] 
                 except:
                     logger.info("skipping invalid line #%i in %s: with %s, %s, %s, %s" % (line_no, questions,a,b,c,expected))
                 if a not in ok_vocab or b not in ok_vocab or c not in ok_vocab or expected not in ok_vocab:
